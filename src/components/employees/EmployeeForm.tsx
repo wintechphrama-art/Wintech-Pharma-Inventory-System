@@ -53,7 +53,7 @@ function CreateEmployeeForm({
     reset,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm<EmployeeCreateFormData>({
     resolver: zodResolver(employeeCreateSchema),
     defaultValues: {
@@ -63,6 +63,19 @@ function CreateEmployeeForm({
       password: "",
     },
   });
+
+  const fullName = watch("full_name");
+
+  useEffect(() => {
+    if (!dirtyFields.email && fullName !== undefined) {
+      const formattedName = fullName.trim().toLowerCase().replace(/\s+/g, ".");
+      if (formattedName) {
+        setValue("email", `${formattedName}@factory.local`, { shouldValidate: true });
+      } else {
+        setValue("email", "", { shouldValidate: true });
+      }
+    }
+  }, [fullName, dirtyFields.email, setValue]);
 
   useEffect(() => {
     if (open) {
