@@ -24,6 +24,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 
 import { exportToCsv } from "@/utils/exportCsv";
 import { formatDate } from "@/utils/formatDate";
+import { formatQuantity } from "@/lib/utils";
 
 export default function ReportsPage() {
   const { materials } = useMaterials();
@@ -273,10 +274,10 @@ export default function ReportsPage() {
                         {row["Material Type"]} <span className="text-muted-foreground">{row["Size"]}</span>
                       </TableCell>
                       <TableCell className="text-right font-mono font-medium">
-                        {row["Current Quantity"].toLocaleString()} <span className="text-muted-foreground font-sans text-xs">{row["Unit"]}</span>
+                        {formatQuantity(row["Current Quantity"])} <span className="text-muted-foreground font-sans text-xs">{row["Unit"]}</span>
                       </TableCell>
                       <TableCell className="text-right font-mono text-muted-foreground">
-                        {row["Minimum Stock"].toLocaleString()}
+                        {formatQuantity(row["Minimum Stock"])}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {row["Location"]}
@@ -322,7 +323,7 @@ export default function ReportsPage() {
                     <TableRow key={i}>
                       <TableCell className="font-medium">{row["Employee"]}</TableCell>
                       <TableCell className="text-right font-mono font-medium">
-                        {row["Total Quantity Issued"].toLocaleString()}
+                        {formatQuantity(row["Total Quantity Issued"])}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {row["Number of Transactions"]}
@@ -357,7 +358,7 @@ export default function ReportsPage() {
                     <TableRow key={i}>
                       <TableCell className="font-medium">{row["Machine"]}</TableCell>
                       <TableCell className="text-right font-mono font-medium">
-                        {row["Total Quantity Used"].toLocaleString()}
+                        {formatQuantity(row["Total Quantity Used"])}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {row["Number of Transactions"]}
@@ -411,7 +412,7 @@ export default function ReportsPage() {
                       <TableCell className="text-muted-foreground">{row["Employee"]}</TableCell>
                       <TableCell className="text-muted-foreground">{row["Machine"]}</TableCell>
                       <TableCell className="text-right font-mono font-medium">
-                        {row["Type"] === "ISSUE" ? "-" : "+"}{row["Quantity"].toLocaleString()} <span className="text-muted-foreground font-sans text-xs">{row["Unit"]}</span>
+                        {row["Type"] === "ISSUE" ? "-" : "+"}{formatQuantity(row["Quantity"])} <span className="text-muted-foreground font-sans text-xs">{row["Unit"]}</span>
                       </TableCell>
                     </TableRow>
                   ))}

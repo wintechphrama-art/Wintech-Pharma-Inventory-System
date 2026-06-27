@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Minus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
 import type { Material } from "@/types/material";
 import type { Employee } from "@/types/employee";
 import type { Machine } from "@/types/machine";
+import { formatQuantity } from "@/lib/utils";
 
 interface Props {
   materials: Material[];
@@ -70,7 +71,7 @@ export default function IssueMaterialForm({
       selectedMaterial &&
       qty > Number(selectedMaterial.current_quantity)
     ) {
-      newErrors.quantity = `Only ${Number(selectedMaterial.current_quantity).toLocaleString()} ${selectedMaterial.unit} available`;
+      newErrors.quantity = `Only ${formatQuantity(selectedMaterial.current_quantity)} ${selectedMaterial.unit} available`;
     }
 
     if (purposeType === "machine" && !machineId) {
@@ -124,7 +125,7 @@ export default function IssueMaterialForm({
               <SelectItem key={m.id} value={m.id}>
                 {m.material_type} — {m.material_size}{" "}
                 <span className="text-muted-foreground">
-                  ({Number(m.current_quantity).toLocaleString()} {m.unit})
+                  ({formatQuantity(m.current_quantity)} {m.unit})
                 </span>
               </SelectItem>
             ))}
@@ -149,9 +150,9 @@ export default function IssueMaterialForm({
                     : ""
                 }`}
               >
-                {Number(
+                {formatQuantity(
                   selectedMaterial.current_quantity
-                ).toLocaleString()}{" "}
+                )}{" "}
                 {selectedMaterial.unit}
               </span>
             </div>
@@ -191,14 +192,40 @@ export default function IssueMaterialForm({
         <label className="mb-2 block text-sm font-medium">
           Quantity
         </label>
-        <Input
-          type="number"
-          step="0.01"
-          min="0.01"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          placeholder={`Enter quantity${selectedMaterial ? ` in ${selectedMaterial.unit}` : ""}`}
-        />
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              const current = parseFloat(quantity) || 0;
+              if (current > 1) setQuantity((current - 1).toString());
+              else if (current > 0) setQuantity("");
+            }}
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <Input
+            type="number"
+            step="0.01"
+            min="0.01"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            placeholder={`Enter quantity${selectedMaterial ? ` in ${selectedMaterial.unit}` : ""}`}
+            className="text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              const current = parseFloat(quantity) || 0;
+              setQuantity((current + 1).toString());
+            }}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
         {errors.quantity && (
           <p className="mt-1 text-sm text-destructive">
             {errors.quantity}

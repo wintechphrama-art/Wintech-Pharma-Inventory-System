@@ -14,6 +14,7 @@ import {
 import MaterialStatusBadge from "./MaterialStatusBadge";
 import StockLevelBadge from "./StockLevelBadge";
 import MaterialActions from "./MaterialActions";
+import { formatQuantity } from "@/lib/utils";
 
 interface Props {
   materials: Material[];
@@ -91,7 +92,7 @@ export default function MaterialTable({
                 <TableCell>{material.material_size}</TableCell>
 
                 <TableCell className="text-right font-mono tabular-nums">
-                  {Number(material.current_quantity).toLocaleString()}
+                  {formatQuantity(material.current_quantity)}
                 </TableCell>
 
                 <TableCell className="text-muted-foreground">

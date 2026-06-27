@@ -10,6 +10,7 @@ import { useEmployees } from "@/hooks/useEmployees";
 import { useMaterials } from "@/hooks/useMaterials";
 import { useTransactions } from "@/hooks/useTransactions";
 import { usePermissions } from "@/hooks/usePermissions";
+import { formatQuantity } from "@/lib/utils";
 
 export default function DashboardPage() {
   const { employees } = useEmployees();
@@ -165,7 +166,7 @@ export default function DashboardPage() {
                         </span>
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Min: {Number(m.minimum_stock).toLocaleString()}{" "}
+                        Min: {formatQuantity(m.minimum_stock)}{" "}
                         {m.unit}
                       </p>
                     </div>
@@ -176,7 +177,7 @@ export default function DashboardPage() {
                           : "text-amber-600 dark:text-amber-400"
                       }`}
                     >
-                      {Number(m.current_quantity).toLocaleString()}{" "}
+                      {formatQuantity(m.current_quantity)}{" "}
                       {m.unit}
                     </span>
                   </div>
@@ -219,7 +220,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="text-right">
                         <span className="font-mono text-sm font-semibold">
-                          {Number(txn.quantity_issued).toLocaleString()}{" "}
+                          {formatQuantity(txn.quantity_issued)}{" "}
                           {txn.material?.unit}
                         </span>
                         <p className="text-xs text-muted-foreground">

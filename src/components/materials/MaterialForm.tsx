@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Minus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,7 @@ import {
   type MaterialCreateFormData,
   type MaterialEditFormData,
 } from "@/lib/validators";
+import { formatQuantity } from "@/lib/utils";
 
 /* ──────────────── Create Mode ──────────────── */
 
@@ -50,6 +51,7 @@ function CreateMaterialForm({
     reset,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<MaterialCreateFormData>({
     resolver: zodResolver(materialCreateSchema),
@@ -155,12 +157,37 @@ function CreateMaterialForm({
             <label className="mb-2 block text-sm font-medium">
               Minimum Stock Level
             </label>
-            <Input
-              type="number"
-              step="0.01"
-              {...register("minimum_stock", { valueAsNumber: true })}
-              placeholder="e.g. 10"
-            />
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  const current = getValues("minimum_stock") || 0;
+                  if (current > 0) setValue("minimum_stock", current - 1, { shouldValidate: true });
+                }}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Input
+                type="number"
+                step="0.01"
+                {...register("minimum_stock", { valueAsNumber: true })}
+                placeholder="e.g. 10"
+                className="text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  const current = getValues("minimum_stock") || 0;
+                  setValue("minimum_stock", current + 1, { shouldValidate: true });
+                }}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
             {errors.minimum_stock && (
               <p className="mt-1 text-sm text-destructive">
                 {errors.minimum_stock.message}
@@ -176,12 +203,37 @@ function CreateMaterialForm({
             <label className="mb-2 block text-sm font-medium">
               Initial Stock Quantity
             </label>
-            <Input
-              type="number"
-              step="0.01"
-              {...register("current_quantity", { valueAsNumber: true })}
-              placeholder="e.g. 100"
-            />
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  const current = getValues("current_quantity") || 0;
+                  if (current > 0) setValue("current_quantity", current - 1, { shouldValidate: true });
+                }}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Input
+                type="number"
+                step="0.01"
+                {...register("current_quantity", { valueAsNumber: true })}
+                placeholder="e.g. 100"
+                className="text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  const current = getValues("current_quantity") || 0;
+                  setValue("current_quantity", current + 1, { shouldValidate: true });
+                }}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
             {errors.current_quantity && (
               <p className="mt-1 text-sm text-destructive">
                 {errors.current_quantity.message}
@@ -255,6 +307,7 @@ function EditMaterialForm({
     reset,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<MaterialEditFormData>({
     resolver: zodResolver(materialEditSchema),
@@ -362,12 +415,37 @@ function EditMaterialForm({
             <label className="mb-2 block text-sm font-medium">
               Minimum Stock Level
             </label>
-            <Input
-              type="number"
-              step="0.01"
-              {...register("minimum_stock", { valueAsNumber: true })}
-              placeholder="e.g. 10"
-            />
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  const current = getValues("minimum_stock") || 0;
+                  if (current > 0) setValue("minimum_stock", current - 1, { shouldValidate: true });
+                }}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Input
+                type="number"
+                step="0.01"
+                {...register("minimum_stock", { valueAsNumber: true })}
+                placeholder="e.g. 10"
+                className="text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  const current = getValues("minimum_stock") || 0;
+                  setValue("minimum_stock", current + 1, { shouldValidate: true });
+                }}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
             {errors.minimum_stock && (
               <p className="mt-1 text-sm text-destructive">
                 {errors.minimum_stock.message}
@@ -396,7 +474,7 @@ function EditMaterialForm({
             <div className="grid grid-cols-2 gap-2">
               <span className="text-muted-foreground">Current Stock</span>
               <span className="font-mono font-medium">
-                {Number(material.current_quantity).toLocaleString()}{" "}
+                {formatQuantity(material.current_quantity)}{" "}
                 {material.unit}
               </span>
             </div>

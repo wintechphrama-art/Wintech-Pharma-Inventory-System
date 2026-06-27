@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 
 import { formatDate } from "@/utils/formatDate";
+import { formatQuantity } from "@/lib/utils";
 
 export type UnifiedTransaction = {
   id: string;
@@ -127,9 +128,9 @@ export default function TransactionTable({
                 </TableCell>
               )}
 
-              <TableCell className="text-right font-mono tabular-nums font-medium">
+              <TableCell className="text-right font-mono font-medium">
                 {txn.type === "issue" ? "-" : "+"}
-                {Number(txn.quantity).toLocaleString()}
+                {formatQuantity(txn.quantity)}
               </TableCell>
 
               <TableCell className="text-muted-foreground">

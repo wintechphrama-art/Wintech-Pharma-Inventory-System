@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Minus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 
 import type { MaterialTransaction, MaterialReturn } from "@/types/transaction";
+import { formatQuantity } from "@/lib/utils";
 
 interface Props {
   transactions: MaterialTransaction[];
@@ -65,7 +66,7 @@ export default function ReturnMaterialForm({
     if (!quantity || isNaN(qty) || qty <= 0) {
       newErrors.quantity = "Enter a valid quantity greater than 0";
     } else if (selectedTxn && qty > selectedMax) {
-      newErrors.quantity = `Cannot return more than available (${selectedMax.toLocaleString()})`;
+      newErrors.quantity = `Cannot return more than available (${formatQuantity(selectedMax)})`;
     }
 
     setErrors(newErrors);
@@ -114,7 +115,7 @@ export default function ReturnMaterialForm({
                 return (
                   <SelectItem key={txn.id} value={txn.id}>
                     {txn.material?.material_type} — {txn.material?.material_size} |{" "}
-                    {max.toLocaleString()} {txn.material?.unit} left to return → {txn.employee?.full_name}
+                    {formatQuantity(max)} {txn.material?.unit} left to return → {txn.employee?.full_name}
                   </SelectItem>
                 );
               })
@@ -139,7 +140,7 @@ export default function ReturnMaterialForm({
                 Quantity Issued
               </span>
               <span className="font-mono font-medium">
-                {Number(selectedTxn.quantity_issued).toLocaleString()}{" "}
+                {formatQuantity(selectedTxn.quantity_issued)}{" "}
                 {selectedTxn.material?.unit}
               </span>
               <span className="text-muted-foreground">Issued To</span>
@@ -148,7 +149,7 @@ export default function ReturnMaterialForm({
               </span>
               <span className="text-muted-foreground">Available to Return</span>
               <span className="font-mono font-medium text-emerald-600 dark:text-emerald-400">
-                {selectedMax.toLocaleString()} {selectedTxn.material?.unit}
+                {formatQuantity(selectedMax)} {selectedTxn.material?.unit}
               </span>
               <span className="text-muted-foreground">
                 {selectedTxn.machine ? "Machine" : "Purpose"}
@@ -168,14 +169,40 @@ export default function ReturnMaterialForm({
         <label className="mb-2 block text-sm font-medium">
           Quantity to Return
         </label>
-        <Input
-          type="number"
-          step="0.01"
-          min="0.01"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          placeholder={`Max available: ${selectedTxn ? selectedMax.toLocaleString() : "—"}`}
-        />
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              const current = parseFloat(quantity) || 0;
+              if (current > 1) setQuantity((current - 1).toString());
+              else if (current > 0) setQuantity("");
+            }}
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <Input
+            type="number"
+            step="0.01"
+            min="0.01"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            placeholder={`Max available: ${selectedTxn ? formatQuantity(selectedMax) : "—"}`}
+            className="text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              const current = parseFloat(quantity) || 0;
+              setQuantity((current + 1).toString());
+            }}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
         {errors.quantity && (
           <p className="mt-1 text-sm text-destructive">
             {errors.quantity}

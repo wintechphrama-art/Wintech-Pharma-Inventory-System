@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 
 import type { Material } from "@/types/material";
+import { formatQuantity } from "@/lib/utils";
 
 interface Props {
   material: Material | null;
@@ -55,7 +56,7 @@ export default function DeleteMaterialDialog({
             <span className="font-medium">{material.material_size}</span>
             <span className="text-muted-foreground">Current Stock</span>
             <span className="font-mono font-medium">
-              {Number(material.current_quantity).toLocaleString()}{" "}
+              {formatQuantity(material.current_quantity)}{" "}
               {material.unit}
             </span>
           </div>
