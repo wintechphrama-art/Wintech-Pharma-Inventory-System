@@ -1,5 +1,6 @@
 import { supabase } from "./client";
 import type { Employee, UpdateEmployeeInput } from "@/types/employee";
+import { logAction } from "./audit";
 
 export async function getEmployees(): Promise<Employee[]> {
   const { data, error } = await supabase
@@ -65,6 +66,15 @@ export async function createEmployee(data: {
     throw new Error(result.error);
   }
 
+  if (result?.employee?.id) {
+    await logAction({
+      action: "CREATE",
+      entity_type: "Employee",
+      entity_id: result.employee.id,
+      details: { email: data.email, role: data.role },
+    });
+  }
+
   return result;
 }
 
@@ -81,6 +91,13 @@ export async function updateEmployee(
     .eq("id", id);
 
   if (error) throw error;
+
+  await logAction({
+    action: "UPDATE",
+    entity_type: "Employee",
+    entity_id: id,
+    details: data,
+  });
 }
 
 /**
@@ -95,6 +112,12 @@ export async function deactivateEmployee(
     .eq("id", id);
 
   if (error) throw error;
+
+  await logAction({
+    action: "DEACTIVATE",
+    entity_type: "Employee",
+    entity_id: id,
+  });
 }
 
 /**
@@ -109,6 +132,12 @@ export async function reactivateEmployee(
     .eq("id", id);
 
   if (error) throw error;
+
+  await logAction({
+    action: "REACTIVATE",
+    entity_type: "Employee",
+    entity_id: id,
+  });
 }
 
 /**
@@ -125,4 +154,10 @@ export async function resetEmployeePassword(
   });
 
   if (error) throw error;
+
+  await logAction({
+    action: "RESET_PASSWORD",
+    entity_type: "Employee",
+    entity_id: targetUserId,
+  });
 }

@@ -11,6 +11,7 @@ import IssueMaterialPage from "@/pages/transactions/IssueMaterialPage";
 import ReturnsPage from "@/pages/transactions/ReturnsPage";
 import TransactionHistoryPage from "@/pages/transactions/TransactionHistoryPage";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
+import AuditLogsPage from "@/pages/audit/AuditLogsPage";
 
 export default function AppRouter() {
   return (
@@ -97,6 +98,14 @@ export default function AppRouter() {
           element={
             <ProtectedRoute allowedRoles={["super_admin"]}>
               <MachinesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/audit"
+          element={
+            <ProtectedRoute allowedRoles={["super_admin"]}>
+              <AuditLogsPage />
             </ProtectedRoute>
           }
         />

@@ -1,4 +1,5 @@
 import { supabase } from "./client";
+import { logAction } from "./audit";
 import type {
   Material,
   CreateMaterialInput,
@@ -42,6 +43,16 @@ export async function createMaterial(
 
   if (error) throw error;
 
+  await logAction({
+    action: "CREATE",
+    entity_type: "Material",
+    entity_id: data.id,
+    details: {
+      material_type: data.material_type,
+      material_size: data.material_size,
+    },
+  });
+
   return data as Material;
 }
 
@@ -55,6 +66,13 @@ export async function updateMaterial(
     .eq("id", id);
 
   if (error) throw error;
+
+  await logAction({
+    action: "UPDATE",
+    entity_type: "Material",
+    entity_id: id,
+    details: input,
+  });
 }
 
 /**
@@ -69,6 +87,12 @@ export async function deactivateMaterial(
     .eq("id", id);
 
   if (error) throw error;
+
+  await logAction({
+    action: "DEACTIVATE",
+    entity_type: "Material",
+    entity_id: id,
+  });
 }
 
 /**
@@ -83,6 +107,12 @@ export async function reactivateMaterial(
     .eq("id", id);
 
   if (error) throw error;
+
+  await logAction({
+    action: "REACTIVATE",
+    entity_type: "Material",
+    entity_id: id,
+  });
 }
 
 /**
@@ -117,4 +147,10 @@ export async function deleteMaterial(id: string): Promise<void> {
   if (count === 0) {
     throw new Error("Deletion blocked by database permissions (RLS) or material not found.");
   }
+
+  await logAction({
+    action: "DELETE",
+    entity_type: "Material",
+    entity_id: id,
+  });
 }

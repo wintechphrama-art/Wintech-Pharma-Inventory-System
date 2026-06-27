@@ -82,6 +82,12 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
       icon: Cog,
       roles: ["super_admin"],
     },
+    {
+      name: "Audit Logs",
+      path: "/audit",
+      icon: ClipboardList,
+      roles: ["super_admin"],
+    },
   ];
 
   const filteredMenu = menuItems.filter((item) =>

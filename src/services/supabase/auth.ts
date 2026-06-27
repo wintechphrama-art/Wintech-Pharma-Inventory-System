@@ -1,4 +1,5 @@
 import { supabase } from "./client";
+import { logAction } from "./audit";
 
 export async function loginWithEmployeeCode(
   employeeCode: string,
@@ -26,10 +27,27 @@ console.log("PROFILE ERROR:", profileError);
     throw error;
   }
 
+  await logAction({
+    action: "LOGIN",
+    entity_type: "AUTH",
+    entity_id: data.user.id,
+    details: { employee_code: employeeCode.toUpperCase() },
+  });
+
   return data;
 }
 
 export async function logout() {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (user) {
+    await logAction({
+      action: "LOGOUT",
+      entity_type: "AUTH",
+      entity_id: user.id,
+    });
+  }
+
   await supabase.auth.signOut();
 }
 

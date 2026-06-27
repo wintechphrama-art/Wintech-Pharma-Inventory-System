@@ -1,4 +1,5 @@
 import { supabase } from "./client";
+import { logAction } from "./audit";
 import type {
   Machine,
   CreateMachineInput,
@@ -41,6 +42,13 @@ export async function createMachine(
 
   if (error) throw error;
 
+  await logAction({
+    action: "CREATE",
+    entity_type: "Machine",
+    entity_id: data.id,
+    details: { machine_code: data.machine_code, machine_name: data.machine_name },
+  });
+
   return data as Machine;
 }
 
@@ -54,6 +62,13 @@ export async function updateMachine(
     .eq("id", id);
 
   if (error) throw error;
+
+  await logAction({
+    action: "UPDATE",
+    entity_type: "Machine",
+    entity_id: id,
+    details: input,
+  });
 }
 
 export async function deactivateMachine(
@@ -65,6 +80,12 @@ export async function deactivateMachine(
     .eq("id", id);
 
   if (error) throw error;
+
+  await logAction({
+    action: "DEACTIVATE",
+    entity_type: "Machine",
+    entity_id: id,
+  });
 }
 
 export async function reactivateMachine(
@@ -76,4 +97,10 @@ export async function reactivateMachine(
     .eq("id", id);
 
   if (error) throw error;
+
+  await logAction({
+    action: "REACTIVATE",
+    entity_type: "Machine",
+    entity_id: id,
+  });
 }

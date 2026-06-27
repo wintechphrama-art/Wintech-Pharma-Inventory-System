@@ -1,4 +1,5 @@
 import { supabase } from "./client";
+import { logAction } from "./audit";
 import type {
   MaterialTransaction,
   CreateTransactionInput,
@@ -84,6 +85,17 @@ export async function createTransaction(
 
   if (error) throw error;
 
+  await logAction({
+    action: "ISSUE",
+    entity_type: "Transaction",
+    entity_id: data.id,
+    details: {
+      material_id: input.material_id,
+      employee_id: input.employee_id,
+      quantity: input.quantity_issued,
+    },
+  });
+
   return data as MaterialTransaction;
 }
 
@@ -144,6 +156,16 @@ export async function createReturn(
     .single();
 
   if (error) throw error;
+
+  await logAction({
+    action: "RETURN",
+    entity_type: "Transaction",
+    entity_id: data.id,
+    details: {
+      transaction_id: input.transaction_id,
+      quantity: input.quantity_returned,
+    },
+  });
 
   return data as MaterialReturn;
 }
