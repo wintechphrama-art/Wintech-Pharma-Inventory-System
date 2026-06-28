@@ -72,7 +72,7 @@ export default function ReturnsPage() {
           {/* Return Form */}
           <div className="rounded-xl border bg-card p-6">
             <h2 className="mb-4 text-lg font-semibold">
-              New Return
+              Return
             </h2>
             <ReturnMaterialForm
               transactions={transactions}
