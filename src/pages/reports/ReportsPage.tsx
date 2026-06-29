@@ -47,7 +47,7 @@ export default function ReportsPage() {
         "Current Quantity": Number(m.current_quantity),
         "Minimum Stock": Number(m.minimum_stock),
         "Unit": m.unit,
-        "Location": m.location || "—",
+        "Vendor": m.vendor || "—",
         "Status": Number(m.current_quantity) <= Number(m.minimum_stock) ? "Low Stock" : "In Stock",
       }));
   }, [materials]);
@@ -263,7 +263,7 @@ export default function ReportsPage() {
                     <TableHead>Material</TableHead>
                     <TableHead className="text-right">Current Qty</TableHead>
                     <TableHead className="text-right">Min Stock</TableHead>
-                    <TableHead>Location</TableHead>
+                    <TableHead>Vendor</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -280,7 +280,7 @@ export default function ReportsPage() {
                         {formatQuantity(row["Minimum Stock"])}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {row["Location"]}
+                        {row["Vendor"]}
                       </TableCell>
                       <TableCell>
                         {row["Status"] === "Low Stock" ? (

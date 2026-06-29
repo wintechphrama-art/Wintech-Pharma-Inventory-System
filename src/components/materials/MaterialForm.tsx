@@ -61,7 +61,7 @@ function CreateMaterialForm({
       unit: "Nos",
       minimum_stock: 0,
       current_quantity: 0,
-      location: "",
+      vendor: "",
     },
   });
 
@@ -73,7 +73,7 @@ function CreateMaterialForm({
         unit: "Nos",
         minimum_stock: 0,
         current_quantity: 0,
-        location: "",
+        vendor: "",
       });
     }
   }, [open, reset]);
@@ -241,18 +241,18 @@ function CreateMaterialForm({
             )}
           </div>
 
-          {/* Location */}
+          {/* Vendor */}
           <div>
             <label className="mb-2 block text-sm font-medium">
-              Storage Location
+              Vendor
             </label>
             <Input
-              {...register("location")}
-              placeholder="e.g. Rack A-3, Bin 12"
+              {...register("vendor")}
+              placeholder="e.g. ABC Suppliers, XYZ Pharma"
             />
-            {errors.location && (
+            {errors.vendor && (
               <p className="mt-1 text-sm text-destructive">
-                {errors.location.message}
+                {errors.vendor.message}
               </p>
             )}
           </div>
@@ -316,7 +316,7 @@ function EditMaterialForm({
       material_size: material.material_size,
       unit: material.unit,
       minimum_stock: Number(material.minimum_stock),
-      location: material.location ?? "",
+      vendor: material.vendor ?? "",
     },
   });
 
@@ -327,7 +327,7 @@ function EditMaterialForm({
         material_size: material.material_size,
         unit: material.unit,
         minimum_stock: Number(material.minimum_stock),
-        location: material.location ?? "",
+        vendor: material.vendor ?? "",
       });
     }
   }, [open, material, reset]);
@@ -453,18 +453,18 @@ function EditMaterialForm({
             )}
           </div>
 
-          {/* Location */}
+          {/* Vendor */}
           <div>
             <label className="mb-2 block text-sm font-medium">
-              Storage Location
+              Vendor
             </label>
             <Input
-              {...register("location")}
-              placeholder="e.g. Rack A-3, Bin 12"
+              {...register("vendor")}
+              placeholder="e.g. ABC Suppliers, XYZ Pharma"
             />
-            {errors.location && (
+            {errors.vendor && (
               <p className="mt-1 text-sm text-destructive">
-                {errors.location.message}
+                {errors.vendor.message}
               </p>
             )}
           </div>

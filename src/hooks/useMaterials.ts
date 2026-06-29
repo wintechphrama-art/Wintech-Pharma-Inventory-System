@@ -13,6 +13,7 @@ import {
   deactivateMaterial as deactivateMaterialService,
   reactivateMaterial as reactivateMaterialService,
   deleteMaterial as deleteMaterialService,
+  restockMaterial as restockMaterialService,
 } from "@/services/supabase/materials";
 
 export function useMaterials() {
@@ -88,6 +89,20 @@ export function useMaterials() {
     }
   }
 
+  async function restockMaterial(
+    id: string,
+    quantity: number,
+    remarks?: string | null
+  ) {
+    setMutating(true);
+    try {
+      await restockMaterialService(id, quantity, remarks);
+      await loadMaterials();
+    } finally {
+      setMutating(false);
+    }
+  }
+
   return {
     materials,
     loading,
@@ -98,5 +113,6 @@ export function useMaterials() {
     deactivateMaterial,
     reactivateMaterial,
     deleteMaterial,
+    restockMaterial,
   };
 }

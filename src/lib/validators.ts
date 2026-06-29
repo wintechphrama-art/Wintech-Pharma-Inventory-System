@@ -85,9 +85,9 @@ export const materialCreateSchema = z.object({
     .min(0, "Initial stock cannot be negative")
     .optional(),
 
-  location: z
+  vendor: z
     .string()
-    .max(200, "Location must be under 200 characters")
+    .max(200, "Vendor must be under 200 characters")
     .optional()
     .or(z.literal("")),
 });
@@ -116,13 +116,35 @@ export const materialEditSchema = z.object({
     .number({ message: "Minimum stock must be a number" })
     .min(0, "Minimum stock cannot be negative"),
 
-  location: z
+  vendor: z
     .string()
-    .max(200, "Location must be under 200 characters")
+    .max(200, "Vendor must be under 200 characters")
     .optional()
     .or(z.literal("")),
 });
 
 export type MaterialEditFormData = z.infer<
   typeof materialEditSchema
+>;
+
+/* ──────────────── Restock Schema ──────────────── */
+
+export const restockSchema = z.object({
+  material_id: z
+    .string()
+    .min(1, "Please select a material"),
+
+  quantity: z
+    .number({ message: "Quantity must be a number" })
+    .gt(0, "Quantity must be greater than 0"),
+
+  remarks: z
+    .string()
+    .max(500, "Remarks must be under 500 characters")
+    .optional()
+    .or(z.literal("")),
+});
+
+export type RestockFormData = z.infer<
+  typeof restockSchema
 >;

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import {
   Package,
   Plus,
+  PackagePlus,
   AlertTriangle,
   Layers,
   MapPin,
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import MaterialTable from "@/components/materials/MaterialTable";
 import MaterialForm from "@/components/materials/MaterialForm";
 import MaterialSearch from "@/components/materials/MaterialSearch";
+import RestockMaterialDialog from "@/components/materials/RestockMaterialDialog";
 import DeactivateMaterialDialog from "@/components/materials/DeactivateMaterialDialog";
 import DeleteMaterialDialog from "@/components/materials/DeleteMaterialDialog";
 
@@ -26,6 +28,7 @@ import type { Material } from "@/types/material";
 import type {
   MaterialCreateFormData,
   MaterialEditFormData,
+  RestockFormData,
 } from "@/lib/validators";
 
 export default function MaterialsPage() {
@@ -38,6 +41,7 @@ export default function MaterialsPage() {
     deactivateMaterial,
     reactivateMaterial,
     deleteMaterial,
+    restockMaterial,
   } = useMaterials();
 
   const { can } = usePermissions();
@@ -45,9 +49,12 @@ export default function MaterialsPage() {
   // Dialog states
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [restockOpen, setRestockOpen] = useState(false);
   const [deactivateOpen, setDeactivateOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] =
+    useState<Material | null>(null);
+  const [restockMaterial_, setRestockMaterial_] =
     useState<Material | null>(null);
 
   // Search / filter
@@ -71,7 +78,7 @@ export default function MaterialsPage() {
         (m) =>
           m.material_type.toLowerCase().includes(query) ||
           m.material_size.toLowerCase().includes(query) ||
-          (m.location && m.location.toLowerCase().includes(query))
+          (m.vendor && m.vendor.toLowerCase().includes(query))
       );
     }
 
@@ -107,12 +114,12 @@ export default function MaterialsPage() {
     const types = new Set(
       materials.filter((m) => m.status).map((m) => m.material_type)
     ).size;
-    const locations = new Set(
+    const vendors = new Set(
       materials
-        .filter((m) => m.status && m.location)
-        .map((m) => m.location)
+        .filter((m) => m.status && m.vendor)
+        .map((m) => m.vendor)
     ).size;
-    return { total, lowStock, types, locations };
+    return { total, lowStock, types, vendors };
   }, [materials]);
 
   // Handlers
@@ -124,7 +131,7 @@ export default function MaterialsPage() {
         unit: data.unit,
         minimum_stock: data.minimum_stock,
         current_quantity: data.current_quantity,
-        location: data.location || null,
+        vendor: data.vendor || null,
       });
       setCreateOpen(false);
       toast.success("Material added successfully", {
@@ -145,7 +152,7 @@ export default function MaterialsPage() {
         material_size: data.material_size,
         unit: data.unit,
         minimum_stock: data.minimum_stock,
-        location: data.location || null,
+        vendor: data.vendor || null,
       });
       setEditOpen(false);
       setSelectedMaterial(null);
@@ -162,6 +169,29 @@ export default function MaterialsPage() {
   function handleEditClick(material: Material) {
     setSelectedMaterial(material);
     setEditOpen(true);
+  }
+
+  function handleRestockClick(material?: Material) {
+    setRestockMaterial_(material ?? null);
+    setRestockOpen(true);
+  }
+
+  async function handleRestock(data: RestockFormData) {
+    try {
+      await restockMaterial(data.material_id, data.quantity, data.remarks);
+      setRestockOpen(false);
+      setRestockMaterial_(null);
+      const mat = materials.find((m) => m.id === data.material_id);
+      toast.success("Material restocked successfully", {
+        description: mat
+          ? `${mat.material_type} — ${mat.material_size}: +${data.quantity} ${mat.unit}`
+          : `Added ${data.quantity} units.`,
+      });
+    } catch (err: any) {
+      toast.error("Failed to restock material", {
+        description: err.message || "Something went wrong.",
+      });
+    }
   }
 
   function handleToggleActiveClick(material: Material) {
@@ -255,10 +285,20 @@ export default function MaterialsPage() {
           </div>
 
           {can("manage_materials") && (
-            <Button onClick={() => setCreateOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Material
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => handleRestockClick()}
+                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-950"
+              >
+                <PackagePlus className="mr-2 h-4 w-4" />
+                Restock
+              </Button>
+              <Button onClick={() => setCreateOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Material
+              </Button>
+            </div>
           )}
         </div>
 
@@ -284,8 +324,8 @@ export default function MaterialsPage() {
           />
           <StatCard
             icon={<MapPin className="h-5 w-5" />}
-            label="Storage Locations"
-            value={stats.locations}
+            label="Vendors"
+            value={stats.vendors}
             accent="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
           />
         </div>
@@ -307,6 +347,7 @@ export default function MaterialsPage() {
           canEdit={can("manage_materials")}
           canDelete={can("manage_materials")}
           onEdit={handleEditClick}
+          onRestock={handleRestockClick}
           onToggleActive={handleToggleActiveClick}
           onDelete={handleDeleteClick}
         />
@@ -356,6 +397,19 @@ export default function MaterialsPage() {
             if (!open) setSelectedMaterial(null);
           }}
           onConfirm={handleConfirmDelete}
+          loading={mutating}
+        />
+
+        {/* Restock Dialog */}
+        <RestockMaterialDialog
+          open={restockOpen}
+          onOpenChange={(open) => {
+            setRestockOpen(open);
+            if (!open) setRestockMaterial_(null);
+          }}
+          materials={materials}
+          preselectedMaterial={restockMaterial_}
+          onSubmit={handleRestock}
           loading={mutating}
         />
       </div>

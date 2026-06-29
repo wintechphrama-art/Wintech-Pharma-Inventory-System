@@ -21,6 +21,7 @@ interface Props {
   canEdit: boolean;
   canDelete: boolean;
   onEdit: (material: Material) => void;
+  onRestock: (material: Material) => void;
   onToggleActive: (material: Material) => void;
   onDelete: (material: Material) => void;
 }
@@ -30,6 +31,7 @@ export default function MaterialTable({
   canEdit,
   canDelete,
   onEdit,
+  onRestock,
   onToggleActive,
   onDelete,
 }: Props) {
@@ -61,7 +63,7 @@ export default function MaterialTable({
             <TableHead className="text-right">Stock</TableHead>
             <TableHead>Unit</TableHead>
             <TableHead>Stock Level</TableHead>
-            <TableHead>Location</TableHead>
+            <TableHead>Vendor</TableHead>
             <TableHead>Status</TableHead>
             {(canEdit || canDelete) && (
               <TableHead className="w-[60px] text-right">
@@ -107,7 +109,7 @@ export default function MaterialTable({
                 </TableCell>
 
                 <TableCell className="text-muted-foreground">
-                  {material.location || "—"}
+                  {material.vendor || "—"}
                 </TableCell>
 
                 <TableCell>
@@ -121,6 +123,7 @@ export default function MaterialTable({
                       canEdit={canEdit}
                       canDelete={canDelete}
                       onEdit={onEdit}
+                      onRestock={onRestock}
                       onToggleActive={onToggleActive}
                       onDelete={onDelete}
                     />

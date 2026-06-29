@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   MoreHorizontal,
   Pencil,
+  PackagePlus,
   XCircle,
   CheckCircle,
   Trash2,
@@ -24,6 +25,7 @@ interface Props {
   canEdit: boolean;
   canDelete: boolean;
   onEdit: (material: Material) => void;
+  onRestock: (material: Material) => void;
   onToggleActive: (material: Material) => void;
   onDelete: (material: Material) => void;
 }
@@ -33,6 +35,7 @@ export default function MaterialActions({
   canEdit,
   canDelete,
   onEdit,
+  onRestock,
   onToggleActive,
   onDelete,
 }: Props) {
@@ -63,6 +66,19 @@ export default function MaterialActions({
           >
             <Pencil className="mr-2 h-4 w-4" />
             Edit Material
+          </DropdownMenuItem>
+        )}
+
+        {canEdit && material.status && (
+          <DropdownMenuItem
+            onClick={() => {
+              setOpen(false);
+              onRestock(material);
+            }}
+            className="text-emerald-600 focus:text-emerald-600"
+          >
+            <PackagePlus className="mr-2 h-4 w-4" />
+            Restock
           </DropdownMenuItem>
         )}
 

@@ -154,3 +154,42 @@ export async function deleteMaterial(id: string): Promise<void> {
     entity_id: id,
   });
 }
+/**
+ * Restock a material by adding quantity to its current stock.
+ */
+export async function restockMaterial(
+  id: string,
+  quantity: number,
+  remarks?: string | null
+): Promise<void> {
+  // Fetch current quantity first
+  const { data: material, error: fetchError } = await supabase
+    .from("materials")
+    .select("current_quantity")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  const previousQty = Number(material.current_quantity);
+  const newQty = previousQty + quantity;
+
+  const { error } = await supabase
+    .from("materials")
+    .update({ current_quantity: newQty })
+    .eq("id", id);
+
+  if (error) throw error;
+
+  await logAction({
+    action: "RESTOCK",
+    entity_type: "Material",
+    entity_id: id,
+    details: {
+      previous_quantity: previousQty,
+      added_quantity: quantity,
+      new_quantity: newQty,
+      remarks: remarks || null,
+    },
+  });
+}

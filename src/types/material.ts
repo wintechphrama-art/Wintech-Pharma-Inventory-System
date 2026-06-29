@@ -5,7 +5,7 @@ export interface Material {
   unit: string;
   current_quantity: number;
   minimum_stock: number;
-  location: string | null;
+  vendor: string | null;
   status: boolean;
   created_at: string;
   updated_at: string;
@@ -17,7 +17,7 @@ export interface CreateMaterialInput {
   unit: string;
   minimum_stock: number;
   current_quantity?: number;
-  location?: string | null;
+  vendor?: string | null;
 }
 
 export interface UpdateMaterialInput {
@@ -25,5 +25,5 @@ export interface UpdateMaterialInput {
   material_size?: string;
   unit?: string;
   minimum_stock?: number;
-  location?: string | null;
+  vendor?: string | null;
 }
