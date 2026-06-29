@@ -104,3 +104,24 @@ export async function reactivateMachine(
     entity_id: id,
   });
 }
+
+/**
+ * Permanently delete a machine from the database.
+ */
+export async function deleteMachine(id: string): Promise<void> {
+  const { error, count } = await supabase
+    .from("machines")
+    .delete({ count: "exact" })
+    .eq("id", id);
+
+  if (error) throw error;
+  if (count === 0) {
+    throw new Error("Deletion blocked by database permissions (RLS) or machine not found.");
+  }
+
+  await logAction({
+    action: "DELETE",
+    entity_type: "Machine",
+    entity_id: id,
+  });
+}

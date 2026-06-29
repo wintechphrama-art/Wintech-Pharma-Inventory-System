@@ -5,6 +5,7 @@ import {
   Pencil,
   XCircle,
   CheckCircle,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ interface Props {
   canDelete: boolean;
   onEdit: (machine: Machine) => void;
   onToggleActive: (machine: Machine) => void;
+  onDelete: (machine: Machine) => void;
 }
 
 export default function MachineActions({
@@ -32,6 +34,7 @@ export default function MachineActions({
   canDelete,
   onEdit,
   onToggleActive,
+  onDelete,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -88,6 +91,19 @@ export default function MachineActions({
                 Reactivate
               </>
             )}
+          </DropdownMenuItem>
+        )}
+
+        {canDelete && (
+          <DropdownMenuItem
+            onClick={() => {
+              setOpen(false);
+              onDelete(machine);
+            }}
+            className="text-destructive focus:text-destructive"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete Machine
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

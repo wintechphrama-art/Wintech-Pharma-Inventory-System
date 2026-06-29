@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import EmployeeTable from "@/components/employees/EmployeeTable";
 import EmployeeForm from "@/components/employees/EmployeeForm";
 import DeleteEmployeeDialog from "@/components/employees/DeleteEmployeeDialog";
+import RealDeleteEmployeeDialog from "@/components/employees/RealDeleteEmployeeDialog";
 import ResetPasswordDialog from "@/components/employees/ResetPasswordDialog";
 
 import { useEmployees } from "@/hooks/useEmployees";
@@ -40,6 +41,7 @@ export default function EmployeesPage() {
     updateEmployee,
     deactivateEmployee,
     reactivateEmployee,
+    deleteEmployee,
   } = useEmployees();
 
   const { can } = usePermissions();
@@ -48,6 +50,7 @@ export default function EmployeesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [realDeleteOpen, setRealDeleteOpen] = useState(false);
   const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] =
     useState<Employee | null>(null);
@@ -124,6 +127,27 @@ export default function EmployeesPage() {
   function handleToggleActiveClick(employee: Employee) {
     setSelectedEmployee(employee);
     setDeleteOpen(true);
+  }
+
+  function handleDeleteClick(employee: Employee) {
+    setSelectedEmployee(employee);
+    setRealDeleteOpen(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!selectedEmployee) return;
+    try {
+      await deleteEmployee(selectedEmployee.id);
+      toast.success("Employee deleted", {
+        description: `${selectedEmployee.full_name} has been deleted.`,
+      });
+      setRealDeleteOpen(false);
+      setSelectedEmployee(null);
+    } catch (err: any) {
+      toast.error("Delete failed", {
+        description: err.message || "Something went wrong.",
+      });
+    }
   }
 
   function handleResetPasswordClick(employee: Employee) {
@@ -250,6 +274,7 @@ export default function EmployeesPage() {
           canResetPassword={can("reset_password")}
           onEdit={handleEditClick}
           onToggleActive={handleToggleActiveClick}
+          onDelete={handleDeleteClick}
           onResetPassword={handleResetPasswordClick}
         />
 
@@ -287,6 +312,18 @@ export default function EmployeesPage() {
             if (!open) setSelectedEmployee(null);
           }}
           onConfirm={handleConfirmToggle}
+          loading={mutating}
+        />
+
+        {/* Real Delete Confirmation */}
+        <RealDeleteEmployeeDialog
+          employee={selectedEmployee}
+          open={realDeleteOpen}
+          onOpenChange={(open) => {
+            setRealDeleteOpen(open);
+            if (!open) setSelectedEmployee(null);
+          }}
+          onConfirm={handleConfirmDelete}
           loading={mutating}
         />
 

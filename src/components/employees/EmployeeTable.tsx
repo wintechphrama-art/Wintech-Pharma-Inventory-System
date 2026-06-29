@@ -24,6 +24,7 @@ interface Props {
   canResetPassword?: boolean;
   onEdit: (employee: Employee) => void;
   onToggleActive: (employee: Employee) => void;
+  onDelete: (employee: Employee) => void;
   onResetPassword?: (employee: Employee) => void;
 }
 
@@ -34,6 +35,7 @@ export default function EmployeeTable({
   canResetPassword = false,
   onEdit,
   onToggleActive,
+  onDelete,
   onResetPassword,
 }: Props) {
   if (employees.length === 0) {
@@ -116,6 +118,7 @@ export default function EmployeeTable({
                     canResetPassword={canResetPassword}
                     onEdit={onEdit}
                     onToggleActive={onToggleActive}
+                    onDelete={onDelete}
                     onResetPassword={onResetPassword}
                   />
                 </TableCell>

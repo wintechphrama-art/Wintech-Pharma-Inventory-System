@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 
 import MachineTable from "@/components/machines/MachineTable";
 import MachineForm from "@/components/machines/MachineForm";
+import DeleteMachineDialog from "@/components/machines/DeleteMachineDialog";
 
 import { useMachines } from "@/hooks/useMachines";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -41,6 +42,7 @@ export default function MachinesPage() {
     updateMachine,
     deactivateMachine,
     reactivateMachine,
+    deleteMachine,
   } = useMachines();
 
   const { can } = usePermissions();
@@ -49,6 +51,7 @@ export default function MachinesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deactivateOpen, setDeactivateOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedMachine, setSelectedMachine] =
     useState<Machine | null>(null);
 
@@ -125,6 +128,27 @@ export default function MachinesPage() {
   function handleToggleActiveClick(machine: Machine) {
     setSelectedMachine(machine);
     setDeactivateOpen(true);
+  }
+
+  function handleDeleteClick(machine: Machine) {
+    setSelectedMachine(machine);
+    setDeleteOpen(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!selectedMachine) return;
+    try {
+      await deleteMachine(selectedMachine.id);
+      toast.success("Machine deleted", {
+        description: `${selectedMachine.machine_name} has been deleted.`,
+      });
+      setDeleteOpen(false);
+      setSelectedMachine(null);
+    } catch (err: any) {
+      toast.error("Delete failed", {
+        description: err.message || "Something went wrong.",
+      });
+    }
   }
 
   async function handleConfirmToggle() {
@@ -234,6 +258,7 @@ export default function MachinesPage() {
           canDelete={can("view_machines")}
           onEdit={handleEditClick}
           onToggleActive={handleToggleActiveClick}
+          onDelete={handleDeleteClick}
         />
 
         {/* Create Dialog */}
@@ -341,6 +366,18 @@ export default function MachinesPage() {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Delete Confirmation */}
+        <DeleteMachineDialog
+          machine={selectedMachine}
+          open={deleteOpen}
+          onOpenChange={(open) => {
+            setDeleteOpen(open);
+            if (!open) setSelectedMachine(null);
+          }}
+          onConfirm={handleConfirmDelete}
+          loading={mutating}
+        />
       </div>
     </AppLayout>
   );

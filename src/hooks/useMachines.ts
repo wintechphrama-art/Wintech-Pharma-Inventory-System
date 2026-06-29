@@ -12,6 +12,7 @@ import {
   updateMachine as updateMachineService,
   deactivateMachine as deactivateMachineService,
   reactivateMachine as reactivateMachineService,
+  deleteMachine as deleteMachineService,
 } from "@/services/supabase/machines";
 
 export function useMachines() {
@@ -77,6 +78,16 @@ export function useMachines() {
     }
   }
 
+  async function deleteMachine(id: string) {
+    setMutating(true);
+    try {
+      await deleteMachineService(id);
+      await loadMachines();
+    } finally {
+      setMutating(false);
+    }
+  }
+
   return {
     machines,
     loading,
@@ -86,5 +97,6 @@ export function useMachines() {
     updateMachine,
     deactivateMachine,
     reactivateMachine,
+    deleteMachine,
   };
 }

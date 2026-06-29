@@ -22,6 +22,7 @@ interface Props {
   canDelete: boolean;
   onEdit: (machine: Machine) => void;
   onToggleActive: (machine: Machine) => void;
+  onDelete: (machine: Machine) => void;
 }
 
 export default function MachineTable({
@@ -30,6 +31,7 @@ export default function MachineTable({
   canDelete,
   onEdit,
   onToggleActive,
+  onDelete,
 }: Props) {
   if (machines.length === 0) {
     return (
@@ -96,6 +98,7 @@ export default function MachineTable({
                     canDelete={canDelete}
                     onEdit={onEdit}
                     onToggleActive={onToggleActive}
+                    onDelete={onDelete}
                   />
                 </TableCell>
               )}

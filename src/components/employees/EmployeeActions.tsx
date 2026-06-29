@@ -6,6 +6,7 @@ import {
   UserX,
   UserCheck,
   Lock,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ interface Props {
   canResetPassword?: boolean;
   onEdit: (employee: Employee) => void;
   onToggleActive: (employee: Employee) => void;
+  onDelete: (employee: Employee) => void;
   onResetPassword?: (employee: Employee) => void;
 }
 
@@ -36,6 +38,7 @@ export default function EmployeeActions({
   canResetPassword = false,
   onEdit,
   onToggleActive,
+  onDelete,
   onResetPassword,
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -105,6 +108,19 @@ export default function EmployeeActions({
                 Reactivate
               </>
             )}
+          </DropdownMenuItem>
+        )}
+
+        {canDelete && (
+          <DropdownMenuItem
+            onClick={() => {
+              setOpen(false);
+              onDelete(employee);
+            }}
+            className="text-destructive focus:text-destructive"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete Employee
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

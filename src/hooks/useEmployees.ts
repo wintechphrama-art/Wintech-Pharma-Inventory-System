@@ -9,6 +9,7 @@ import {
   deactivateEmployee as deactivateEmployeeService,
   reactivateEmployee as reactivateEmployeeService,
   resetEmployeePassword as resetEmployeePasswordService,
+  deleteEmployee as deleteEmployeeService,
 } from "@/services/supabase/employees";
 
 export function useEmployees() {
@@ -79,6 +80,16 @@ export function useEmployees() {
     }
   }
 
+  async function deleteEmployee(id: string) {
+    setMutating(true);
+    try {
+      await deleteEmployeeService(id);
+      await loadEmployees();
+    } finally {
+      setMutating(false);
+    }
+  }
+
   async function resetPassword(id: string, newPassword: string) {
     setMutating(true);
     try {
@@ -98,5 +109,6 @@ export function useEmployees() {
     deactivateEmployee,
     reactivateEmployee,
     resetPassword,
+    deleteEmployee,
   };
 }

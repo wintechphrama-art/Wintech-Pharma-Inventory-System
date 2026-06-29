@@ -161,3 +161,24 @@ export async function resetEmployeePassword(
     entity_id: targetUserId,
   });
 }
+
+/**
+ * Permanently delete an employee from the database.
+ */
+export async function deleteEmployee(id: string): Promise<void> {
+  const { error, count } = await supabase
+    .from("profiles")
+    .delete({ count: "exact" })
+    .eq("id", id);
+
+  if (error) throw error;
+  if (count === 0) {
+    throw new Error("Deletion blocked by database permissions (RLS) or employee not found.");
+  }
+
+  await logAction({
+    action: "DELETE",
+    entity_type: "Employee",
+    entity_id: id,
+  });
+}
