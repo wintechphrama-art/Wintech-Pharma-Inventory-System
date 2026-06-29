@@ -16,15 +16,24 @@ export async function logAction(input: Omit<CreateAuditLogInput, "user_id">): Pr
 export async function getAuditLogs(): Promise<AuditLog[]> {
   const { data, error } = await supabase
     .from("audit_logs")
-    .select(
-      `
-      *,
-      user:profiles!audit_logs_user_id_fkey(full_name, employee_code)
-    `
-    )
+    .select("*")
     .order("created_at", { ascending: false })
     .limit(100);
 
   if (error) throw error;
-  return data as AuditLog[];
+
+  const { data: profilesData, error: profilesError } = await supabase
+    .from("profiles")
+    .select("id, full_name, employee_code");
+
+  if (profilesError) throw profilesError;
+
+  const profilesMap = new Map(profilesData.map((p) => [p.id, p]));
+
+  const logs = (data ?? []).map((log) => ({
+    ...log,
+    user: log.user_id ? profilesMap.get(log.user_id) : null,
+  }));
+
+  return logs as AuditLog[];
 }
